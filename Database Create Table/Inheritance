@@ -1,0 +1,10 @@
+-- Create the maintenance table
+CREATE TABLE Maintenance (
+    MaintID INT AUTO_INCREMENT PRIMARY KEY,
+    CarId INT NOT NULL,
+    MaintDate DATE NOT NULL,
+    Description TEXT NOT NULL,
+    Cost DECIMAL(10, 2) NOT NULL,
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (CarId) REFERENCES Cars(CarId)
+);
