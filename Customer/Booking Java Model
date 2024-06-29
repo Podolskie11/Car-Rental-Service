@@ -1,0 +1,106 @@
+package com.example.lab_rest.model;
+
+import java.sql.Timestamp;
+
+public class Booking {
+    private int bookingId;
+    private int userId;
+    private int carId;
+    private String bookingDate;
+    private String status;
+    private String remarks;
+    private String adminMsg;
+    private String createdAt;
+
+    public Booking() {
+    }
+
+    public Booking(int bookingId, int userId, int carId, String bookingDate, String status, String remarks, String adminMsg, String createdAt) {
+        this.bookingId = bookingId;
+        this.userId = userId;
+        this.carId = carId;
+        this.bookingDate = bookingDate;
+        this.status = status;
+        this.remarks = remarks;
+        this.adminMsg = adminMsg;
+        this.createdAt = createdAt;
+    }
+
+    public int getBookingId() {
+        return bookingId;
+    }
+
+    public void setBookingId(int bookingId) {
+        this.bookingId = bookingId;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public int getCarId() {
+        return carId;
+    }
+
+    public void setCarId(int carId) {
+        this.carId = carId;
+    }
+
+    public String getBookingDate() {
+        return bookingDate;
+    }
+
+    public void setBookingDate(String bookingDate) {
+        this.bookingDate = bookingDate;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
+    }
+
+    public String getAdminMsg() {
+        return adminMsg;
+    }
+
+    public void setAdminMsg(String adminMsg) {
+        this.adminMsg = adminMsg;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    @Override
+    public String toString() {
+        return "Booking{" +
+                "bookingId=" + bookingId +
+                ", userId=" + userId +
+                ", carId=" + carId +
+                ", bookingDate='" + bookingDate + '\'' +
+                ", status='" + status + '\'' +
+                ", remarks='" + remarks + '\'' +
+                ", adminMsg='" + adminMsg + '\'' +
+                ", createdAt='" + createdAt + '\'' +
+                '}';
+    }
+}
