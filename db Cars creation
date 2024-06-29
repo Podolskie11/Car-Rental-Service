@@ -1,9 +1,0 @@
--- Create the cars table with plate_number
-CREATE TABLE Cars (
-    CarId INT AUTO_INCREMENT PRIMARY KEY,
-    Model VARCHAR(50) NOT NULL,
-    Brand VARCHAR(50) NOT NULL,
-    PlateNumber VARCHAR(20) NOT NULL,
-    Availability BOOLEAN DEFAULT TRUE,
-    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
