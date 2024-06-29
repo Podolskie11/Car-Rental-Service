@@ -1,0 +1,12 @@
+CREATE TABLE Bookings (
+    BookingId INT AUTO_INCREMENT PRIMARY KEY,
+    UserId INT NOT NULL,
+    CarId INT NOT NULL,
+    BookingDate DATE NOT NULL,
+    Status ENUM('New', 'Approved', 'Rejected') DEFAULT 'New',
+    Remarks TEXT,
+    AdminMsg TEXT,
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (UserId) REFERENCES users(id),
+    FOREIGN KEY (CarId) REFERENCES Cars(CarId)
+);
