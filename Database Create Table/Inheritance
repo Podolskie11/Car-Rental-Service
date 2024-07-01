@@ -1,10 +1,13 @@
--- Create the maintenance table
-CREATE TABLE Maintenance (
-    MaintID INT AUTO_INCREMENT PRIMARY KEY,
-    CarId INT NOT NULL,
-    MaintDate DATE NOT NULL,
-    Description TEXT NOT NULL,
-    Cost DECIMAL(10, 2) NOT NULL,
-    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (CarId) REFERENCES Cars(CarId)
-);
+//name triger: after_user_insert
+//table: users
+//time: AFTER
+//Event: Insert
+
+BEGIN
+  IF (NEW.role = 'Admin')
+  THEN
+    INSERT INTO Admin (AdminID) VALUES (users.id);
+  ELSE
+    INSERT INTO Customer (CustomerID) VALUES (users.id);
+  END IF;
+END
