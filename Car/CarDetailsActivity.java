@@ -69,12 +69,15 @@ public class CarDetailsActivity extends AppCompatActivity {
                     TextView tvModel = findViewById(R.id.tvModel);
                     TextView tvAStatus = findViewById(R.id.tvAStatus);
                     TextView tvRemark = findViewById(R.id.tvRemark);
-                    
+                    TextView tvBrand = findViewById(R.id.tvBrand);
+                    TextView tvPlateNumber = findViewById(R.id.tvPlateNumber);
 
                     // set values
                     tvModel.setText(car.getModel());
                     tvAStatus.setText(car.getAvailabilityStatus());
                     tvRemark.setText(car.getRemarks());
+                    tvBrand.setText(car.getBrand());
+                    tvPlateNumber.setText(car.getPlateNumber());
 
                 }
                 else if (response.code() == 401) {
