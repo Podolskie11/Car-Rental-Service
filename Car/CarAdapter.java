@@ -1,116 +1,104 @@
-package com.example.lab_rest;
+package com.example.lab_rest.adapter;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.lab_rest.R;
+import com.example.lab_rest.model.Book;
 import com.example.lab_rest.model.Car;
-import com.example.lab_rest.model.Car;
-import com.example.lab_rest.model.User;
-import com.example.lab_rest.remote.ApiUtils;
-import com.example.lab_rest.remote.CarService;
-import com.example.lab_rest.sharedpref.SharedPrefManager;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import java.util.List;
 
-public class CarDetailsActivity extends AppCompatActivity {
+public class CarAdapter extends RecyclerView.Adapter<CarAdapter.ViewHolder> {
 
-    private CarService carService;
+    /**
+     * Create ViewHolder class to bind list item view
+     */
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener {
+        public TextView tvModel;
+        public TextView tvAStatus;
+        public TextView tvRemarks;
+        public TextView tvBrand;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_car_details);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
-        // retrieve car details based on selected id
+        public TextView tvPlateNumber;
 
-        // get car id sent by CarListActivity, -1 if not found
-        Intent intent = getIntent();
-        int carId = intent.getIntExtra("car_id", -1);
 
-        // get user info from SharedPreferences
-        SharedPrefManager spm = new SharedPrefManager(getApplicationContext());
-        User user = spm.getUser();
-        String token = user.getToken();
+        public ViewHolder(View itemView) {
+            super(itemView);
+            tvModel = itemView.findViewById(R.id.tvModel);
+            tvAStatus = itemView.findViewById(R.id.tvAStatus);
+            tvRemarks = itemView.findViewById(R.id.tvRemarks);
+            tvBrand = itemView.findViewById(R.id.tvBrand);
+            tvPlateNumber = itemView.findViewById(R.id.tvPlateNumber);
 
-        // get car service instance
-        carService = ApiUtils.getCarService();
+            itemView.setOnLongClickListener(this); //register long click action to this viewholder instance
+        }
 
-        // execute the API query. send the token and car id
-        carService.getCar(token, carId).enqueue(new Callback<Car>() {
+        @Override
+        public boolean onLongClick(View v) {
+            currentPos = getAdapterPosition(); //key point, record the position here
+            return false;
+        }
+    } // close ViewHolder class
 
-            @Override
-            public void onResponse(Call<Car> call, Response<Car> response) {
-                // for debug purpose
-                Log.d("MyApp:", "Response: " + response.raw().toString());
+    //////////////////////////////////////////////////////////////////////
+    // adapter class definitions
 
-                if (response.code() == 200) {
-                    // server return success
+    private List<Car> carListData;   // list of book objects
+    private Context mContext;       // activity context
+    private int currentPos;         // currently selected item (long press)
 
-                    // get car object from response
-                    Car car = response.body();
-
-                    // get references to the view elements
-                    TextView tvModel = findViewById(R.id.tvModel);
-                    TextView tvAStatus = findViewById(R.id.tvAStatus);
-                    TextView tvRemark = findViewById(R.id.tvRemark);
-                    TextView tvBrand = findViewById(R.id.tvBrand);
-                    TextView tvPlateNumber = findViewById(R.id.tvPlateNumber);
-
-                    // set values
-                    tvModel.setText(car.getModel());
-                    tvAStatus.setText(car.getAvailabilityStatus());
-                    tvRemark.setText(car.getRemarks());
-                    tvBrand.setText(car.getBrand());
-                    tvPlateNumber.setText(car.getPlateNumber());
-
-                }
-                else if (response.code() == 401) {
-                    // unauthorized error. invalid token, ask user to relogin
-                    Toast.makeText(getApplicationContext(), "Invalid session. Please login again", Toast.LENGTH_LONG).show();
-                    clearSessionAndRedirect();
-                }
-                else {
-                    // server return other error
-                    Toast.makeText(getApplicationContext(), "Error: " + response.message(), Toast.LENGTH_LONG).show();
-                    Log.e("MyApp: ", response.toString());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Car> call, Throwable t) {
-                Toast.makeText(null, "Error connecting", Toast.LENGTH_LONG).show();
-            }
-        });
-
+    public CarAdapter(Context context, List<Car> listData) {
+        carListData = listData;
+        mContext = context;
     }
 
-    public void clearSessionAndRedirect() {
-        // clear the shared preferences
-        SharedPrefManager spm = new SharedPrefManager(getApplicationContext());
-        spm.logout();
+    private Context getmContext() {
+        return mContext;
+    }
 
-        // terminate this activity
-        finish();
+    @Override
+    public CarAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        Context context = parent.getContext();
+        LayoutInflater inflater = LayoutInflater.from(context);
+        // Inflate layout using the single item layout
+        View view = inflater.inflate(R.layout.car_list_item, parent, false);
+        // Return a new holder instance
+        CarAdapter.ViewHolder viewHolder = new CarAdapter.ViewHolder(view);
+        return viewHolder;
+    }
 
-        // forward to Login Page
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
+    @Override
+    public void onBindViewHolder(CarAdapter.ViewHolder holder, int position) {
+        // bind data to the view holder instance
+        Car m = carListData.get(position);
+        holder.tvModel.setText(m.getModel());
+        holder.tvAStatus.setText(m.getAvailabilityStatus());
+        holder.tvRemarks.setText(m.getRemarks());
+        holder.tvBrand.setText(m.getBrand());
+        holder.tvPlateNumber.setText(m.getPlateNumber());
+    }
 
+    @Override
+    public int getItemCount() {
+        return carListData.size();
+    }
+
+
+    /**
+     * return book object for currently selected book (index already set by long press in viewholder)
+     * @return
+     */
+    public Car getSelectedItem() {
+        // return the book record if the current selected position/index is valid
+        if(currentPos>=0 && carListData !=null && currentPos<carListData.size()) {
+            return carListData.get(currentPos);
+        }
+        return null;
     }
 }
