@@ -17,10 +17,6 @@ public class ApiUtils {
         return RetrofitClient.getClient(BASE_URL).create(BookingService.class);
     }
 
-    public static BookService getBookService() {
-        return RetrofitClient.getClient(BASE_URL).create(BookService.class);
-    }
-
     public static CarService getCarService() {
         return RetrofitClient.getClient(BASE_URL).create(CarService.class);
     }
