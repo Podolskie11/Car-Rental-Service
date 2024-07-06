@@ -14,13 +14,13 @@
     <TextView
         android:layout_columnSpan="2"
         android:layout_gravity="center_horizontal"
-        android:text="Update Book"
+        android:text="Update Car"
         android:textSize="32dip" />
 
     <TextView
         android:layout_columnSpan="2"
         android:layout_gravity="center"
-        android:text="Update book information"
+        android:text="Update Car information"
         android:textSize="16dip" />
 
     <LinearLayout
@@ -84,6 +84,85 @@
                 android:lines="2" />
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.25"
+                android:text="Brand:" />
+
+            <EditText
+                android:id="@+id/txtBrand"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.75" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.25"
+                android:text="PlateNo:" />
+
+            <EditText
+                android:id="@+id/txtPlateNumber"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.75" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.25"
+                android:text="Created At:" />
+
+            <TextView
+                android:id="@+id/tvCreatedAt"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.4"
+                android:text="YYYY-MM-DD" />
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Pick Date"
+                android:layout_weight="0.35"
+                android:onClick="showDatePickerDialog" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.25"
+                android:text="Category:" />
+
+            <Spinner
+                android:id="@+id/spCategory"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.75" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -97,6 +176,7 @@
                 android:onClick="updateCar" />
 
         </LinearLayout>
+
 
 
     </LinearLayout>
