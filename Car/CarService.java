@@ -25,16 +25,22 @@ public interface CarService {
     @FormUrlEncoded
     @POST("car")
     Call<Car> addCar(@Header ("api-key") String apiKey, @Field("model") String model,
-                     @Field("availabilityStatus") String availiabiltyStatus,
-                     @Field("remarks") String remarks);
+                     @Field("availabilityStatus") String availabilityStatus,
+                     @Field("remarks") String remarks,@Field("brand") String brand,
+                     @Field("plateNumber") String plateNumber,
+                     @Field("createdAt") String createdAt,
+                     @Field("maintenance_ID") int maintenance_ID);
     @DELETE("car/{carID}")
     Call<DeleteResponse> deleteCar(@Header ("api-key") String apiKey, @Path("carID") int carID);
 
     @FormUrlEncoded
     @POST("car/{carID}")
     Call<Car> updateCar(@Header ("api-key") String apiKey, @Path("carID") int carID,
-                          @Field("model") String model, @Field("availabilityStatus") String availiabiltyStatus,
-                          @Field("remarks") String remarks
-                          );
+                        @Field("model") String model,
+                        @Field("availabilityStatus") String availabilityStatus,
+                        @Field("remarks") String remarks,@Field("brand") String brand,
+                        @Field("plateNumber") String plateNumber,
+                        @Field("createdAt") String createdAt,
+                        @Field("maintenance_ID") int maintenance_ID);
 
 }
