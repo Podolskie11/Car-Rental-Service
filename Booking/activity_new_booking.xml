@@ -39,7 +39,7 @@
                 android:text="Car ID:" />
 
             <Spinner
-                android:id="@+id/spinnerCarId"
+                android:id="@+id/spCar"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.75" />
@@ -80,24 +80,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.25"
-                android:text="Status:" />
-
-            <EditText
-                android:id="@+id/txtStatus"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.75" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.25"
                 android:text="Remarks:" />
 
             <EditText
@@ -116,10 +98,10 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.25"
-                android:text="Admin Message:" />
+                android:text="Status:" />
 
             <EditText
-                android:id="@+id/txtAdminMsg"
+                android:id="@+id/txtStatus"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.75" />
@@ -152,13 +134,16 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <Button
+                android:id="@+id/btnAddBooking"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Add Booking"
                 android:onClick="addNewBooking" />
         </LinearLayout>
+
     </LinearLayout>
 </GridLayout>
