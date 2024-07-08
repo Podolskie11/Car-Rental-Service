@@ -1,18 +1,21 @@
 package com.example.lab_rest.remote;
 
-import com.example.lab_rest.model.Book;
 import com.example.lab_rest.model.Car;
 import com.example.lab_rest.model.DeleteResponse;
+import com.example.lab_rest.model.FileInfo;
 
 import java.util.List;
 
+import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.DELETE;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 import retrofit2.http.Path;
 
 public interface CarService {
@@ -29,7 +32,8 @@ public interface CarService {
                      @Field("remarks") String remarks,@Field("brand") String brand,
                      @Field("plateNumber") String plateNumber,
                      @Field("createdAt") String createdAt,
-                     @Field("maintenance_ID") int maintenance_ID);
+                     @Field("maintenance_ID") int maintenance_ID,
+                     @Field("image") String image);
     @DELETE("car/{carID}")
     Call<DeleteResponse> deleteCar(@Header ("api-key") String apiKey, @Path("carID") int carID);
 
@@ -41,6 +45,11 @@ public interface CarService {
                         @Field("remarks") String remarks,@Field("brand") String brand,
                         @Field("plateNumber") String plateNumber,
                         @Field("createdAt") String createdAt,
-                        @Field("maintenance_ID") int maintenance_ID);
+                        @Field("maintenance_ID") int maintenance_ID,
+                        @Field("image") String image);
+
+    @Multipart
+    @POST("files")
+    Call<FileInfo> uploadFile(@Header ("api-key") String apiKey, @Part MultipartBody.Part file);
 
 }
