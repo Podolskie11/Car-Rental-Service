@@ -108,12 +108,13 @@
     </androidx.cardview.widget.CardView>
 
     <Button
-        android:id="@+id/btnSubmit"
+        android:id="@+id/submitSave"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_marginTop="10dp"
         android:backgroundTint="@color/darkblue"
         android:text="Register"
+        android:onClick="addCustomer"
         android:textSize="18sp"
         app:cornerRadius="20dp" />
 
@@ -123,6 +124,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
+        android:onClick="LoginCustomer"
         android:text="Already have an account?\nLogin Here"
         android:textAlignment="center"
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
