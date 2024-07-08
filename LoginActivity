@@ -1,0 +1,8 @@
+//add this part of code in login activity
+
+public void registerCustomer(View view) {
+        // forward user to BookListActivity
+        Intent intent = new Intent(getApplicationContext(), CustomerRegister.class);
+        startActivity(intent);
+    }
+}
