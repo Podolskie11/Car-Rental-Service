@@ -4,12 +4,13 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.lab_rest.R;
-import com.example.lab_rest.model.Book;
 import com.example.lab_rest.model.Car;
 
 import java.util.List;
@@ -26,6 +27,8 @@ public class CarAdapter extends RecyclerView.Adapter<CarAdapter.ViewHolder> {
         public TextView tvBrand;
 
         public TextView tvPlateNumber;
+        public ImageView imgBookCover;
+
 
 
         public ViewHolder(View itemView) {
@@ -35,7 +38,7 @@ public class CarAdapter extends RecyclerView.Adapter<CarAdapter.ViewHolder> {
             tvRemarks = itemView.findViewById(R.id.tvRemarks);
             tvBrand = itemView.findViewById(R.id.tvBrand);
             tvPlateNumber = itemView.findViewById(R.id.tvPlateNumber);
-
+            imgBookCover = itemView.findViewById(R.id.imgBookCover);
             itemView.setOnLongClickListener(this); //register long click action to this viewholder instance
         }
 
@@ -82,6 +85,13 @@ public class CarAdapter extends RecyclerView.Adapter<CarAdapter.ViewHolder> {
         holder.tvRemarks.setText(m.getRemarks());
         holder.tvBrand.setText(m.getBrand());
         holder.tvPlateNumber.setText(m.getPlateNumber());
+
+        // Use Glide to load the image into the ImageView
+        Glide.with(mContext)
+                .load("http://178.128.220.20/2023500191/api/" + m.getImage())
+                .placeholder(R.drawable.default_cover) // Placeholder image if the URL is empty
+                .error(R.drawable.default_cover) // Error image if there is a problem loading the image
+                .into(holder.imgBookCover);
     }
 
     @Override
