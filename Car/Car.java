@@ -15,11 +15,12 @@ public class Car {
     private String availabilityStatus;
     private String remarks;
     private String createdAt;
+    private String image;
 
     public Car() {
     }
 
-    public Car(int carID, int maintenance_ID, Maintenance maintenance, String model, String brand, String plateNumber, String availabilityStatus, String remarks, String createdAt) {
+    public Car(int carID, int maintenance_ID, Maintenance maintenance, String model, String brand, String plateNumber, String availabilityStatus, String remarks, String createdAt, String image) {
         this.carID = carID;
         this.maintenance_ID = maintenance_ID;
         this.maintenance = maintenance;
@@ -29,6 +30,7 @@ public class Car {
         this.availabilityStatus = availabilityStatus;
         this.remarks = remarks;
         this.createdAt = createdAt;
+        this.image = image;
     }
 
     public int getCarID() {
@@ -103,6 +105,14 @@ public class Car {
         this.createdAt = createdAt;
     }
 
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
     @Override
     public String toString() {
         return "Car{" +
@@ -115,6 +125,7 @@ public class Car {
                 ", availabilityStatus='" + availabilityStatus + '\'' +
                 ", remarks='" + remarks + '\'' +
                 ", createdAt='" + createdAt + '\'' +
+                ", image='" + image + '\'' +
                 '}';
     }
 }
