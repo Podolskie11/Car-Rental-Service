@@ -1,46 +1,54 @@
 package com.example.lab_rest;
 
-import static com.example.lab_rest.R.id.txtBrand;
-import static com.example.lab_rest.R.id.txtRemarks;
-
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
 
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.DialogFragment;
 
 
-import com.example.lab_rest.model.Book;
+import com.bumptech.glide.Glide;
 import com.example.lab_rest.model.Car;
-import com.example.lab_rest.model.Car;
+import com.example.lab_rest.model.FileInfo;
 import com.example.lab_rest.model.Maintenance;
 import com.example.lab_rest.model.User;
 import com.example.lab_rest.remote.ApiUtils;
 
 import com.example.lab_rest.remote.CarService;
-import com.example.lab_rest.remote.CarService;
-import com.example.lab_rest.remote.CarService;
 import com.example.lab_rest.remote.MaintenanceService;
 import com.example.lab_rest.sharedpref.SharedPrefManager;
 
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -48,6 +56,9 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -72,6 +83,13 @@ public class UpdateCarActivity extends AppCompatActivity {
     private ArrayAdapter<Maintenance> adapter;
     private Car car;  // current car to be updated
     private Car updatedCar;
+
+    // file upload feature
+    private ImageView imgBookCover;
+    private static final int PICK_IMAGE = 1;
+    private static final int PERMISSION_REQUEST_STORAGE = 2;
+    private Uri uri;
+
 
     /**
      * Date picker fragment class
@@ -140,6 +158,7 @@ public class UpdateCarActivity extends AppCompatActivity {
         txtPlateNumber= findViewById(R.id.txtPlateNumber);
         tvCreatedAt = findViewById(R.id.tvCreatedAt);
         spCategory = findViewById(R.id.spCategory);
+        imgBookCover = findViewById(R.id.imgBookCover);
 
         // retrieve car info from database using the car id
         // get user info from SharedPreferences
@@ -178,6 +197,7 @@ public class UpdateCarActivity extends AppCompatActivity {
                         // parse created date string to date object
                         createdAt = sdf.parse(car.getCreatedAt());
                     } catch (ParseException e) {
+
                         e.printStackTrace();
                     }
 
@@ -185,6 +205,16 @@ public class UpdateCarActivity extends AppCompatActivity {
                     for (int i=0; i<adapter.getCount(); i++)
                         if (adapter.getItem(i).getMaintenanceID() == car.getMaintenance_ID())
                             spCategory.setSelection(i);
+
+
+                    // Use Glide to load the image into the ImageView
+                    Glide.with(getApplicationContext())
+                            .load("http://178.128.220.20/fkexample/api/" + car.getImage()) // Make sure your Book object has a method to get the image URL
+                            .placeholder(R.drawable.default_cover) // Placeholder image if the URL is empty
+                            .error(R.drawable.default_cover) // Error image if there is a problem loading the image
+                            .into(imgBookCover);
+
+
 
                 }
                 else if (response.code() == 401) {
@@ -242,10 +272,27 @@ public class UpdateCarActivity extends AppCompatActivity {
     }
 
     /**
-     * Update car info in database when the user click Update Book button
+     * Update Book button action handler
+     * Update book info in database when the user click Update Book button
      * @param view
      */
     public void updateCar(View view) {
+
+        if (uri != null && !uri.getPath().isEmpty()) {
+            // new image selected
+            // Upload file first. if successful, call updateBookRecord in onResponse()
+            uploadFile(uri);
+        }
+        else {
+            // no new image selected
+            // no need to upload file, update all other fields
+            updateCarRecord();
+        }
+
+    }
+
+
+    public void updateCarRecord() {
         // get values in form
         String model = txtModel.getText().toString();
         String availabilityStatus = txtAStatus.getText().toString();
@@ -290,7 +337,7 @@ public class UpdateCarActivity extends AppCompatActivity {
         CarService carService = ApiUtils.getCarService();
         Call<Car> call = carService.updateCar(user.getToken(), car.getCarID(), car.getModel(),
                 car.getAvailabilityStatus(), car.getRemarks(), car.getBrand(), car.getPlateNumber(),
-                car.getCreatedAt(), car.getMaintenance_ID());
+                car.getCreatedAt(), car.getMaintenance_ID(), car.getImage());
 
         // execute
         call.enqueue(new Callback<Car>() {
@@ -337,6 +384,49 @@ public class UpdateCarActivity extends AppCompatActivity {
         });
     }
 
+    private void uploadFile(Uri fileUri) {
+        try {
+            InputStream inputStream = getContentResolver().openInputStream(fileUri);
+            byte[] fileBytes = getBytesFromInputStream(inputStream);
+            RequestBody requestFile = RequestBody.create(MediaType.parse(getContentResolver().getType(fileUri)), fileBytes);
+            MultipartBody.Part body = MultipartBody.Part.createFormData("file", getFileName(uri), requestFile);
+
+            // get token user info from shared preference in order to get token value
+            SharedPrefManager spm = new SharedPrefManager(getApplicationContext());
+            User user = spm.getUser();
+
+            CarService carService = ApiUtils.getCarService();
+            Call<FileInfo> call = carService.uploadFile(user.getToken(), body);
+
+            call.enqueue(new Callback<FileInfo>() {
+                @Override
+                public void onResponse(Call<FileInfo> call, Response<FileInfo> response) {
+                    if (response.isSuccessful()) {
+                        // file uploaded successfully
+                        // Now add the book record with the uploaded file name
+                        FileInfo fi = response.body();
+                        String fileName = fi.getFile();
+
+                        // update book object to newly uploaded image
+                        car.setImage(fileName);
+
+                        updateCarRecord();    // update book record with the new information
+                    } else {
+                        Toast.makeText(getApplicationContext(), "File upload failed", Toast.LENGTH_LONG).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<FileInfo> call, Throwable t) {
+                    Toast.makeText(getApplicationContext(), "Error uploading file", Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(getApplicationContext(), "Error preparing file for upload", Toast.LENGTH_LONG).show();
+        }
+    }
 
     public void clearSessionAndRedirect() {
         // clear the shared preferences
@@ -384,4 +474,135 @@ public class UpdateCarActivity extends AppCompatActivity {
         AlertDialog alert = builder.create();
         alert.show();
     }
+
+    /**
+     * Get image bytes from local disk. Used to upload the image bytes to Rest API
+     * @param inputStream
+     * @return
+     * @throws IOException
+     */
+    private byte[] getBytesFromInputStream(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+        int bufferSize = 1024;
+        byte[] buffer = new byte[bufferSize];
+
+        int len;
+        while ((len = inputStream.read(buffer)) != -1) {
+            byteBuffer.write(buffer, 0, len);
+        }
+        return byteBuffer.toByteArray();
+    }
+
+    /**
+     * Get image file name from Uri
+     * @param uri
+     * @return
+     */
+    private String getFileName(Uri uri) {
+        String result = null;
+        if (uri.getScheme().equals("content")) {
+            Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+            try {
+                if (cursor != null && cursor.moveToFirst()) {
+                    int columnIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                    if (columnIndex != -1) {
+                        result = cursor.getString(columnIndex);
+                    }
+                }
+            } finally {
+                if (cursor != null)
+                    cursor.close();
+            }
+        }
+        if (result == null) {
+            result = uri.getPath();
+            int cut = result.lastIndexOf('/');
+            if (cut != -1) {
+                result = result.substring(cut + 1);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Button browse action handler
+     * @param view
+     */
+    public void choosePhoto(View view) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // Android 13+, require READ_MEDIA_IMAGES permission
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_MEDIA_IMAGES)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{android.Manifest.permission.READ_MEDIA_IMAGES},
+                        PERMISSION_REQUEST_STORAGE);
+            } else {
+                openGallery();
+            }
+        } else {
+            // For Android 12 and below, require READ_EXTERNAL_STORAGE permission
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE},
+                        PERMISSION_REQUEST_STORAGE);
+            } else {
+                openGallery();
+            }
+        }
+    }
+
+    /**
+     * User clicked deny or allow in permission request dialog
+     * @param permissions The requested permissions. Never null.
+     * @param grantResults The grant results for the corresponding permissions
+     *     which is either {@link android.content.pm.PackageManager#PERMISSION_GRANTED}
+     *     or {@link android.content.pm.PackageManager#PERMISSION_DENIED}. Never null.
+     *
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSION_REQUEST_STORAGE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                openGallery();
+            } else {
+                Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    /**
+     * Open Image Picker Activity
+     */
+    private void openGallery() {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent, PICK_IMAGE);
+    }
+
+    /**
+     * Callback for Activity, in this case will handle the result of Image Picker Activity
+     * @param requestCode The integer request code originally supplied to
+     *                    startActivityForResult(), allowing you to identify who this
+     *                    result came from.
+     * @param resultCode The integer result code returned by the child activity
+     *                   through its setResult().
+     * @param data An Intent, which can return result data to the caller
+     *               (various data can be attached to Intent "extras").
+     *
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_IMAGE && resultCode == Activity.RESULT_OK) {
+            // image picker activity return a value
+            if(data != null) {
+                // get file uri
+                uri = data.getData();
+                // set image to imageview
+                imgBookCover.setImageURI(uri);
+            }
+        }
+    }
+
 }
