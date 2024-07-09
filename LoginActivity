@@ -45,16 +45,14 @@ public class LoginActivity extends AppCompatActivity {
         // get references to form elements
         edtUsername = findViewById(R.id.edtUsername);
         edtPassword = findViewById(R.id.edtPassword);
-        textViewRegister = findViewById(R.id.textViewRegister);
+        
+       textViewRegister = findViewById(R.id.textViewRegister);
 
-        textViewRegister.setClickable(true);
-        textViewRegister.setOnClickListener(new View.OnClickListener()
-        {
+        textViewRegister.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick (View view){
-                Intent intent = new Intent(LoginActivity.this, CustomerRegister.class);
+            public void onClick(View v) {
+                Intent intent = new Intent(LoginActivity.this, CustomerRegisterActivity.class);
                 startActivity(intent);
-                finish();
             }
         });
 
