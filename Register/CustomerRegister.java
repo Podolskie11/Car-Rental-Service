@@ -54,17 +54,16 @@ public class CustomerRegister extends AppCompatActivity {
         edtContact = findViewById(R.id.edtContact);
         edtAddress = findViewById(R.id.edtAddress);
         submitSave = findViewById(R.id.submitSave);
-        textViewLogin = findViewById(R.id.textViewLogin);
+         textViewLogin = findViewById(R.id.textViewLogin);
 
-        // Set click listener for the login text view
         textViewLogin.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
                 Intent intent = new Intent(CustomerRegister.this, LoginActivity.class);
                 startActivity(intent);
-                finish();
             }
         });
+
 
         // Set click listener for the submit button
         submitSave.setOnClickListener(this::registerCustomer);
